@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	res, err := qp.Parse("", []byte(`something=another`))
+	res, err := qp.Parse("", []byte(`item.spec.ssd=yes`))
 	if err != nil {
 		fmt.Println(err)
 		return

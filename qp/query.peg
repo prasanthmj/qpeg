@@ -1,25 +1,25 @@
 {
 package qp
-
-type Field struct{
-  Key string
-  Value string
-}
-   
 }
 
 Field
-  = key:Identifier _ "=" _ value:Identifier {
-      return &Field{Key:key.(string), Value:value.(string)}, nil
+  = src:Source _ "=" _ value:Identifier {
+      return &Field{Key:src.(*Source), Value:value.(string)}, nil
   }
 
-_
-  = [ \t]*
+Source
+  = name:Identifier path:("." Identifier)* {
+      return makeSource(name,path)
+  }
   
 Identifier
   = [a-zA-Z0-9_]+ { 
       return string(c.text), nil
 }
+
+_
+  = [ \t]*
+
   
 EOF 
   = !.

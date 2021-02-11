@@ -18,49 +18,44 @@ import (
 	"unicode/utf8"
 )
 
-type Field struct {
-	Key   string
-	Value string
-}
-
 var g = &grammar{
 	rules: []*rule{
 		{
 			name: "Field",
-			pos:  position{line: 11, col: 1, offset: 71},
+			pos:  position{line: 5, col: 1, offset: 16},
 			expr: &actionExpr{
-				pos: position{line: 12, col: 5, offset: 81},
+				pos: position{line: 6, col: 5, offset: 26},
 				run: (*parser).callonField1,
 				expr: &seqExpr{
-					pos: position{line: 12, col: 5, offset: 81},
+					pos: position{line: 6, col: 5, offset: 26},
 					exprs: []interface{}{
 						&labeledExpr{
-							pos:   position{line: 12, col: 5, offset: 81},
-							label: "key",
+							pos:   position{line: 6, col: 5, offset: 26},
+							label: "src",
 							expr: &ruleRefExpr{
-								pos:  position{line: 12, col: 9, offset: 85},
-								name: "Identifier",
+								pos:  position{line: 6, col: 9, offset: 30},
+								name: "Source",
 							},
 						},
 						&ruleRefExpr{
-							pos:  position{line: 12, col: 20, offset: 96},
+							pos:  position{line: 6, col: 16, offset: 37},
 							name: "_",
 						},
 						&litMatcher{
-							pos:        position{line: 12, col: 22, offset: 98},
+							pos:        position{line: 6, col: 18, offset: 39},
 							val:        "=",
 							ignoreCase: false,
 							want:       "\"=\"",
 						},
 						&ruleRefExpr{
-							pos:  position{line: 12, col: 26, offset: 102},
+							pos:  position{line: 6, col: 22, offset: 43},
 							name: "_",
 						},
 						&labeledExpr{
-							pos:   position{line: 12, col: 28, offset: 104},
+							pos:   position{line: 6, col: 24, offset: 45},
 							label: "value",
 							expr: &ruleRefExpr{
-								pos:  position{line: 12, col: 34, offset: 110},
+								pos:  position{line: 6, col: 30, offset: 51},
 								name: "Identifier",
 							},
 						},
@@ -69,29 +64,58 @@ var g = &grammar{
 			},
 		},
 		{
-			name: "_",
-			pos:  position{line: 16, col: 1, offset: 193},
-			expr: &zeroOrMoreExpr{
-				pos: position{line: 17, col: 5, offset: 199},
-				expr: &charClassMatcher{
-					pos:        position{line: 17, col: 5, offset: 199},
-					val:        "[ \\t]",
-					chars:      []rune{' ', '\t'},
-					ignoreCase: false,
-					inverted:   false,
+			name: "Source",
+			pos:  position{line: 10, col: 1, offset: 135},
+			expr: &actionExpr{
+				pos: position{line: 11, col: 5, offset: 146},
+				run: (*parser).callonSource1,
+				expr: &seqExpr{
+					pos: position{line: 11, col: 5, offset: 146},
+					exprs: []interface{}{
+						&labeledExpr{
+							pos:   position{line: 11, col: 5, offset: 146},
+							label: "name",
+							expr: &ruleRefExpr{
+								pos:  position{line: 11, col: 10, offset: 151},
+								name: "Identifier",
+							},
+						},
+						&labeledExpr{
+							pos:   position{line: 11, col: 21, offset: 162},
+							label: "path",
+							expr: &zeroOrMoreExpr{
+								pos: position{line: 11, col: 26, offset: 167},
+								expr: &seqExpr{
+									pos: position{line: 11, col: 27, offset: 168},
+									exprs: []interface{}{
+										&litMatcher{
+											pos:        position{line: 11, col: 27, offset: 168},
+											val:        ".",
+											ignoreCase: false,
+											want:       "\".\"",
+										},
+										&ruleRefExpr{
+											pos:  position{line: 11, col: 31, offset: 172},
+											name: "Identifier",
+										},
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
 		{
 			name: "Identifier",
-			pos:  position{line: 19, col: 1, offset: 209},
+			pos:  position{line: 15, col: 1, offset: 229},
 			expr: &actionExpr{
-				pos: position{line: 20, col: 5, offset: 224},
+				pos: position{line: 16, col: 5, offset: 244},
 				run: (*parser).callonIdentifier1,
 				expr: &oneOrMoreExpr{
-					pos: position{line: 20, col: 5, offset: 224},
+					pos: position{line: 16, col: 5, offset: 244},
 					expr: &charClassMatcher{
-						pos:        position{line: 20, col: 5, offset: 224},
+						pos:        position{line: 16, col: 5, offset: 244},
 						val:        "[a-zA-Z0-9_]",
 						chars:      []rune{'_'},
 						ranges:     []rune{'a', 'z', 'A', 'Z', '0', '9'},
@@ -102,27 +126,52 @@ var g = &grammar{
 			},
 		},
 		{
+			name: "_",
+			pos:  position{line: 20, col: 1, offset: 297},
+			expr: &zeroOrMoreExpr{
+				pos: position{line: 21, col: 5, offset: 303},
+				expr: &charClassMatcher{
+					pos:        position{line: 21, col: 5, offset: 303},
+					val:        "[ \\t]",
+					chars:      []rune{' ', '\t'},
+					ignoreCase: false,
+					inverted:   false,
+				},
+			},
+		},
+		{
 			name: "EOF",
-			pos:  position{line: 24, col: 1, offset: 279},
+			pos:  position{line: 24, col: 1, offset: 314},
 			expr: &notExpr{
-				pos: position{line: 25, col: 5, offset: 288},
+				pos: position{line: 25, col: 5, offset: 323},
 				expr: &anyMatcher{
-					line: 25, col: 6, offset: 289,
+					line: 25, col: 6, offset: 324,
 				},
 			},
 		},
 	},
 }
 
-func (c *current) onField1(key, value interface{}) (interface{}, error) {
-	return &Field{Key: key.(string), Value: value.(string)}, nil
+func (c *current) onField1(src, value interface{}) (interface{}, error) {
+	return &Field{Key: src.(*Source), Value: value.(string)}, nil
 
 }
 
 func (p *parser) callonField1() (interface{}, error) {
 	stack := p.vstack[len(p.vstack)-1]
 	_ = stack
-	return p.cur.onField1(stack["key"], stack["value"])
+	return p.cur.onField1(stack["src"], stack["value"])
+}
+
+func (c *current) onSource1(name, path interface{}) (interface{}, error) {
+	return makeSource(name, path)
+
+}
+
+func (p *parser) callonSource1() (interface{}, error) {
+	stack := p.vstack[len(p.vstack)-1]
+	_ = stack
+	return p.cur.onSource1(stack["name"], stack["path"])
 }
 
 func (c *current) onIdentifier1() (interface{}, error) {
