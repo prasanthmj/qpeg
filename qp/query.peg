@@ -1,0 +1,25 @@
+{
+package qp
+
+type Field struct{
+  Key string
+  Value string
+}
+   
+}
+
+Field
+  = key:Identifier _ "=" _ value:Identifier {
+      return &Field{Key:key.(string), Value:value.(string)}, nil
+  }
+
+_
+  = [ \t]*
+  
+Identifier
+  = [a-zA-Z0-9_]+ { 
+      return string(c.text), nil
+}
+  
+EOF 
+  = !.
