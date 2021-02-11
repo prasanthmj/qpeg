@@ -2,7 +2,7 @@ package qp
 
 type Field struct {
 	Key   *Source
-	Value *Value
+	Value interface{} // String / Int /Float /Measure
 }
 
 type Source struct {
@@ -10,17 +10,9 @@ type Source struct {
 	Path []string
 }
 
-type Value struct {
-	String  string
-	Int     int64
-	Float   float64
-	Measure *Measure
-}
-
 type Measure struct {
-	Int   int64
-	Float float64
-	Units string
+	Number interface{} //int64/float64
+	Units  string
 }
 
 func makeSource(name interface{}, path interface{}) (*Source, error) {
@@ -38,21 +30,8 @@ func makeSource(name interface{}, path interface{}) (*Source, error) {
 	return &Source{Name: name.(string), Path: paths}, nil
 }
 
-func makeValue(val interface{}) (*Value, error) {
-
-	retVal := &Value{}
-
-	switch v := val.(type) {
-	case string:
-		retVal.String = v
-	case int64:
-		retVal.Int = v
-	case float64:
-		retVal.Float = v
-	case *Measure:
-		retVal.Measure = v
-	}
-	return retVal, nil
+func makeValue(val interface{}) (interface{}, error) {
+	return val, nil
 }
 
 func stringFromChars(chars interface{}) string {
@@ -66,14 +45,7 @@ func stringFromChars(chars interface{}) string {
 }
 
 func makeMeasure(num interface{}, units interface{}) (*Measure, error) {
-	retVal := &Measure{Units: units.(string)}
-
-	switch v := num.(type) {
-	case int64:
-		retVal.Int = v
-	case float64:
-		retVal.Float = v
-	}
+	retVal := &Measure{Number: num, Units: units.(string)}
 
 	return retVal, nil
 }

@@ -4,7 +4,7 @@ package qp
 
 Field
   = src:Source _ "=" _ value:Value {
-      return &Field{Key:src.(*Source), Value:value.(*Value)}, nil
+      return &Field{Key:src.(*Source), Value:value}, nil
   }
 
 Source
