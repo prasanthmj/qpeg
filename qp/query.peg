@@ -3,8 +3,8 @@ package qp
 }
 
 Field
-  = src:Source _ "=" _ value:Identifier {
-      return &Field{Key:src.(*Source), Value:value.(string)}, nil
+  = src:Source _ "=" _ value:Value {
+      return &Field{Key:src.(*Source), Value:value.(*Value)}, nil
   }
 
 Source
@@ -12,6 +12,37 @@ Source
       return makeSource(name,path)
   }
   
+Value
+  = val:(
+      Measure
+    / Float
+    / Integer
+    / Identifier
+    / String 
+    ){
+    return makeValue(val)
+  }
+
+String
+  = '"' chars:[^"]* '"' {
+    return stringFromChars(chars), nil
+  } 
+
+Integer
+  = [+-]? [0-9]+ {
+    return strconv.ParseInt(string(c.text), 10, 64)
+  }
+  
+Measure
+  = number:(Integer / Float) unit:Identifier {
+    return makeMeasure(number, unit)
+  }
+  
+Float
+  = [+-]? ([0-9]* "." [0-9]+ ) {
+      return strconv.ParseFloat(string(c.text), 64)
+    }
+
 Identifier
   = [a-zA-Z0-9_]+ { 
       return string(c.text), nil
