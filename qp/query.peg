@@ -2,14 +2,36 @@
 package qp
 }
 
+
+OrQuery
+  = f:Field _ ff:OrField* _ {
+    return makeOrQuery(f,ff)
+  }
+
+OrField 
+  = _ '|' _ ft:Field {
+    return ft, nil
+  }
+
 Field
-  = src:Source _ "=" _ value:Value {
-      return &Field{Key:src.(*Source), Value:value}, nil
+  = src:Source _ op:Operator _ value:Value {
+      return &Field{Key:src.(*Source),Op:op.(string), Value:value}, nil
   }
 
 Source
   = name:Identifier path:("." Identifier)* {
       return makeSource(name,path)
+  }
+
+Operator
+  = op:(
+     "<="
+    / ">="
+    / "="
+    / "<"
+    / ">"
+  ){
+    return string(c.text), nil
   }
   
 Value
@@ -49,8 +71,9 @@ Identifier
 }
 
 _
-  = [ \t]*
-
+  = [ \t]* { 
+      return "", nil
+ }
   
 EOF 
   = !.

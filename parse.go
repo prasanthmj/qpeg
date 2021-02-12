@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	res, err := qp.Parse("", []byte(`item.spec.ssd=512gb`))
+	res, err := qp.Parse("", []byte(`item.ss=asus | item.spec.ram > 8 | item.spec.ssd>512 | ss=yy `))
 	if err != nil {
 		fmt.Println(err)
 		return

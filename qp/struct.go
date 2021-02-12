@@ -1,7 +1,11 @@
 package qp
 
+type OrQuery struct {
+	Fields []Field
+}
 type Field struct {
 	Key   *Source
+	Op    string
 	Value interface{} // String / Int /Float /Measure
 }
 
@@ -48,4 +52,24 @@ func makeMeasure(num interface{}, units interface{}) (*Measure, error) {
 	retVal := &Measure{Number: num, Units: units.(string)}
 
 	return retVal, nil
+}
+
+func makeOrQuery(f interface{}, ff interface{}) (*OrQuery, error) {
+	var q OrQuery
+
+	//rr, _ := json.MarshalIndent(ff, "", "   ")
+	//fmt.Printf("rr\n%v", string(rr))
+
+	q.Fields = make([]Field, 1)
+	q.Fields[0] = *(f.(*Field))
+
+	fxa := ff.([]interface{})
+
+	//fmt.Printf("fxa len %d", len(fxa))
+
+	for _, ffz := range fxa {
+		q.Fields = append(q.Fields, *(ffz.(*Field)))
+	}
+
+	return &q, nil
 }

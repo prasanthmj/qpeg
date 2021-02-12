@@ -58,3 +58,8 @@ func TestValueFloat(t *testing.T) {
 
 	assert.Equal(t, f.Value, float64(512.1), "Value should be 512")
 }
+
+func TestMultipleFields(t *testing.T) {
+	_, err := qp.Parse("", []byte("item.spec.ssd > 512 item.name=laptop"))
+	assert.Nil(t, err)
+}
