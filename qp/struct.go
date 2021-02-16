@@ -1,8 +1,16 @@
 package qp
 
-type OrQuery struct {
-	Fields []Field
+type Query struct {
+	AQ []*AndQuery
 }
+type AndQuery struct {
+	FQ []*FieldQuery
+}
+type FieldQuery struct {
+	Query *Query
+	Field *Field
+}
+
 type Field struct {
 	Key   *Source
 	Op    string
@@ -54,22 +62,42 @@ func makeMeasure(num interface{}, units interface{}) (*Measure, error) {
 	return retVal, nil
 }
 
-func makeOrQuery(f interface{}, ff interface{}) (*OrQuery, error) {
-	var q OrQuery
+func makeQuery(f interface{}, ff interface{}) (*Query, error) {
+	var q Query
 
-	//rr, _ := json.MarshalIndent(ff, "", "   ")
-	//fmt.Printf("rr\n%v", string(rr))
-
-	q.Fields = make([]Field, 1)
-	q.Fields[0] = *(f.(*Field))
+	q.AQ = make([]*AndQuery, 1)
+	q.AQ[0] = f.(*AndQuery)
 
 	fxa := ff.([]interface{})
 
-	//fmt.Printf("fxa len %d", len(fxa))
-
 	for _, ffz := range fxa {
-		q.Fields = append(q.Fields, *(ffz.(*Field)))
+		q.AQ = append(q.AQ, ffz.(*AndQuery))
 	}
 
 	return &q, nil
+}
+
+func makeAndQuery(f interface{}, ff interface{}) (*AndQuery, error) {
+	var aq AndQuery
+
+	aq.FQ = make([]*FieldQuery, 1)
+	aq.FQ[0] = f.(*FieldQuery)
+
+	fxa := ff.([]interface{})
+
+	for _, ffz := range fxa {
+		aq.FQ = append(aq.FQ, ffz.(*FieldQuery))
+	}
+
+	return &aq, nil
+}
+
+func makeFQFromQuery(q interface{}) (*FieldQuery, error) {
+	fq := &FieldQuery{Query: q.(*Query), Field: nil}
+	return fq, nil
+}
+
+func makeFQFromField(f interface{}) (*FieldQuery, error) {
+	fq := &FieldQuery{Query: nil, Field: f.(*Field)}
+	return fq, nil
 }

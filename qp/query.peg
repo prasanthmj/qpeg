@@ -3,15 +3,28 @@ package qp
 }
 
 
-OrQuery
-  = f:Field _ ff:OrField* _ {
-    return makeOrQuery(f,ff)
+Query
+  = aq:AndQuery _ oq:OrQuery* _ {
+    return makeQuery(aq,oq)
   }
 
-OrField 
-  = _ '|' _ ft:Field {
-    return ft, nil
+OrQuery 
+  = _ '|' _ aq:AndQuery _ {
+    return aq, nil
   }
+
+AndQuery
+  = _ fq:FieldQuery _  fqs:FieldQuery* _ {
+    return makeAndQuery(fq, fqs)
+  }
+  
+FieldQuery
+   = _ '(' _ q:Query _ ')'_ {
+        return makeFQFromQuery(q)
+      }
+   / _ f:Field _ {
+        return makeFQFromField(f)
+     }
 
 Field
   = src:Source _ op:Operator _ value:Value {
